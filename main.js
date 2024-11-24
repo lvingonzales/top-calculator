@@ -27,55 +27,89 @@ buttons[11].setAttribute("class", "buttons digits");
 buttons[11].textContent = '<-';
 digitsPanel.appendChild(buttons[11]);
 
+
+const operandsPanel = document.querySelector("#operands-panel");
+
+buttons.push(document.createElement("button"));
+buttons[12].setAttribute("class", "buttons operands");
+buttons[12].textContent = '+';
+operandsPanel.appendChild(buttons[12]);
+
+buttons.push(document.createElement("button"));
+buttons[13].setAttribute("class", "buttons operands");
+buttons[13].textContent = '-';
+operandsPanel.appendChild(buttons[13]);
+
+buttons.push(document.createElement("button"));
+buttons[14].setAttribute("class", "buttons operands");
+buttons[14].textContent = '*';
+operandsPanel.appendChild(buttons[14]);
+
+buttons.push(document.createElement("button"));
+buttons[15].setAttribute("class", "buttons operands");
+buttons[15].textContent = '/';
+operandsPanel.appendChild(buttons[15]);
+
+buttons.push(document.createElement("button"));
+buttons[16].setAttribute("class", "buttons operands equal");
+buttons[16].textContent = '=';
+operandsPanel.appendChild(buttons[16]);
+buttons[16].addEventListener("click", () =>{
+    calculation(inputArray);
+})
+
 let input;
-for (let i = 0; i < buttons.length; i++){
+for (let i = 0; i < buttons.length - 1; i++){
     buttons[i].addEventListener("click", () =>{
         input = buttons[i].textContent;
         handleInput(input);
     })
 }
 
-
-const operandsPanel = document.querySelector("#operands-panel");
-
-
 let inputArray = [];
 let equation;
 let operandArray;
-let numberArray;
+let numberArray = [];
 let result;
 
 function handleInput(input){
 
     inputArray.push(input);
 
-    console.log(inputArray);
+    displayText.textContent = inputArray.toString().replace(/,/g, '');
+}
 
+function calculation(inputArray) {
 
-    // equation = equation.split("");
+    for (let i = 0; i < inputArray.length; i++){
+        if (inputArray[i+1] !== '+'){
+            numberArray[i] = inputArray[i] + inputArray[i+1];
+        }
+    }
+    operandArray = inputArray.filter((x) => x === '+' || x === '-' || x === '*' || x === '/');
 
-    // numberArray = equation.filter((x) => x >= 0);
-    // operandArray = equation.filter((x) => x === '+' || x === '-' || x === '*' || x === '/');
+    for (let i = 0; i < operandArray.length; i++) {
+        switch (operandArray[i]) {
+            case '+':
+                addFunc();
+                break;
+            case '-':
+                subtractFunc();
+                break;
+            case '*':
+                multiplyFunc();
+                break;
+            case '/':
+                divideFunc();
+                break;
+            default:
+                alert("ERROR");
+                break;
+        }
+    }
 
-    // for (let i = 0; i < operandArray.length; i++){
-    //     switch (operandArray[i]){
-    //         case '+':
-    //             addFunc();
-    //             break;
-    //         case '-':
-    //             subtractFunc();
-    //             break;
-    //         case '*':
-    //             multiplyFunc();
-    //             break;
-    //         case '/':
-    //             divideFunc();
-    //             break;
-    //         default:
-    //             alert("ERROR");
-    //             break;
-    //     }
-    // }
+    displayText.textContent = result;
+    inputArray.splice(0, inputArray.length, result);
 }
 
 function addFunc () {

@@ -26,11 +26,15 @@
 }
 
 #display {
+    display: flex;
+    align-items: center;
+    justify-content: end;
     border: 3px solid black;
     height: 100px;
     width: 450px;
     border-radius: 30px;
     margin: 30px;
+    word-wrap: break-word;
 }
 
 #digits-panel {
@@ -47,12 +51,17 @@
 
 #operands-panel {
     display: flex;
+    flex-wrap: wrap;
     border: 3px solid black;
     height: 350px;
     width: 125px;
     border-radius: 30px;
     margin: 15px; 
     margin-top: 30px;
+    align-content: flex-start;
+    justify-content: center;
+    padding-top: 20px;
+    gap: 5px;
 }
 
 .buttons {
@@ -67,4 +76,22 @@
     height: 50px;
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.operands {
+    width: 100px;
+    height: 50px;
+}
+
+.display-text {
+    width: 400px;
+    font-size: 36px;
+    font-weight: 600;
+    text-align: right;
+    height:fit-content;
+    margin: 20px;
+}
+
+.equal{
+    height: 110px;
 }
