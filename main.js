@@ -1,6 +1,4 @@
 
-//let test = prompt("enter an equation");
-
 let equation;
 let operandArray;
 let numberArray;
