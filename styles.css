@@ -1,4 +1,5 @@
 * {
+    font-family: Roboto;
     margin: 0px;
 }
 
@@ -34,6 +35,9 @@
 
 #digits-panel {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
     border: 3px solid black;
     height: 350px;
     width: 250px;
@@ -51,4 +55,16 @@
     margin-top: 30px;
 }
 
+.buttons {
+    font-size: 24px;
+    font-weight: 700;
+    border-radius: 10px;
+    border: 2px solid black;
+}
 
+.digits {
+    width: 70px;
+    height: 50px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
