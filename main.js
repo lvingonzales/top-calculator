@@ -1,7 +1,6 @@
 const display = document.querySelector("#display");
 const displayText = document.createElement("p");
 displayText.setAttribute("class", "display-text");
-displayText.textContent = 'TEST';
 display.appendChild(displayText);
 
 
@@ -30,33 +29,6 @@ digitsPanel.appendChild(buttons[11]);
 
 const operandsPanel = document.querySelector("#operands-panel");
 
-// buttons.push(document.createElement("button"));
-// buttons[12].setAttribute("class", "buttons operands");
-// buttons[12].textContent = '+';
-// operandsPanel.appendChild(buttons[12]);
-
-// buttons.push(document.createElement("button"));
-// buttons[13].setAttribute("class", "buttons operands");
-// buttons[13].textContent = '-';
-// operandsPanel.appendChild(buttons[13]);
-
-// buttons.push(document.createElement("button"));
-// buttons[14].setAttribute("class", "buttons operands");
-// buttons[14].textContent = '*';
-// operandsPanel.appendChild(buttons[14]);
-
-// buttons.push(document.createElement("button"));
-// buttons[15].setAttribute("class", "buttons operands");
-// buttons[15].textContent = '/';
-// operandsPanel.appendChild(buttons[15]);
-
-// buttons.push(document.createElement("button"));
-// buttons[16].setAttribute("class", "buttons operands equal");
-// buttons[16].textContent = '=';
-// operandsPanel.appendChild(buttons[16]);
-// buttons[16].addEventListener("click", () =>{
-//     calculation(inputArray);
-// })
 
 let symbols = ['+','-','*','/','='];
 let operandButtons = [];
@@ -86,55 +58,93 @@ let operandArray = [];
 let displayArray = [];
 let numberArray = [];
 let result;
+let endOfArray = false;
 
 function handleInput(input){
 
-    displayArray.push(input);
+    if (input === '<-'){
+        inputArray.pop();
+        displayText.textContent = inputArray.toString().replace(/,/g, '');
+    } else if (input === '=') {
+        console.log ("= pressed");
+        operandArray = inputArray.filter ((x) => symbols.includes(x));
 
-    if (symbols.includes(input) && input !== '='){
-        newNum = inputArray.toString().replace(/,/g, '');
-        numberArray.push(newNum);
-        inputArray.splice(0, inputArray.length);
-        operandArray.push(input);
-    } else if (input === '='){
-        newNum = inputArray.toString().replace(/,/g, '');
-        numberArray.push(newNum);
-        inputArray.splice(0, inputArray.length);
+        while (!endOfArray) {
+            let operandIndex = inputArray.findIndex((x) => symbols.includes(x))
+            sortInputArray(operandIndex);
+        }
         calculation();
     } else {
-        inputArray.push(input);
+        endOfArray = false;
+        inputArray.push(input); 
+        displayText.textContent = inputArray.toString().replace(/,/g, '');
+    } 
+}
+
+function sortInputArray(operandIndex) {
+    for (let i = 0; i < inputArray.length; i++) {
+        if (i === operandIndex) {
+            break;
+        }
+        if (!newNum && newNum !== 0) {
+            newNum = inputArray[i];
+        } else {
+            newNum = newNum + inputArray[i];
+        }
     }
 
-    displayText.textContent = displayArray.toString().replace(/,/g, '');
+    if (operandIndex === -1) {
+        inputArray = [];
+        endOfArray = true;
+    } else {
+        inputArray.splice(0, (operandIndex + 1));
+    }
+
+    numberArray.push(newNum);
+
+    newNum = null;
 }
 
 function calculation() {
 
     for (let i = 0; i < operandArray.length; i++) {
+        if (!numberArray[1]){
+            numberArray[1] = 0;
+        } else if (!numberArray[0]){
+            numberArray[0] = 0;
+        }
+
         switch (operandArray[i]) {
             case '+':
-                addFunc();
+                result = parseFloat(numberArray[0]) + parseFloat(numberArray[1]);
                 break;
             case '-':
-                subtractFunc();
+                result = parseFloat(numberArray[0]) - parseFloat(numberArray[1]);
                 break;
             case '*':
-                multiplyFunc();
+                result = parseFloat(numberArray[0]) * parseFloat(numberArray[1]);
                 break;
             case '/':
-                divideFunc();
+                result = parseFloat(numberArray[0]) / parseFloat(numberArray[1]);
                 break;
             default:
                 alert("ERROR");
                 break;
         }
+
+        numberArray.splice(0, 2, result);
     }
 
+    numberArray = [];
+    operandArray = [];
+    calculated = true;
     displayText.textContent = result;
-    displayArray.splice(0, displayArray.length, result);
 }
 
 function addFunc () {
+    if (!numberArray[1]){
+        numberArray[1] = 0;
+    }
     result = parseInt(numberArray[0]) + parseInt(numberArray[1]);
     numberArray.splice(0, 2, result);
     return console.log (result);
