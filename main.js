@@ -23,7 +23,7 @@ digitsPanel.appendChild(buttons[10]);
 
 buttons.push(document.createElement("button"));
 buttons[11].setAttribute("class", "buttons digits");
-buttons[11].textContent = '<-';
+buttons[11].textContent = 'AC';
 digitsPanel.appendChild(buttons[11]);
 
 
@@ -54,90 +54,58 @@ for (let i = 0; i < buttons.length; i++){
 let inputArray = [];
 let newNum;
 let equation;
-let operandArray = [];
-let displayArray = [];
+let operand;
 let numberArray = [];
 let result;
-let endOfArray = false;
 
 function handleInput(input){
 
-    if (input === '<-'){
-        inputArray.pop();
+    if (input === 'AC'){
+        inputArray = [];
+        numberArray = [];
         displayText.textContent = inputArray.toString().replace(/,/g, '');
-    } else if (input === '=') {
-        console.log ("= pressed");
-        operandArray = inputArray.filter ((x) => symbols.includes(x));
-
-        while (!endOfArray) {
-            let operandIndex = inputArray.findIndex((x) => symbols.includes(x))
-            sortInputArray(operandIndex);
+    } else if (symbols.includes(input) && input !== '='){
+        numberArray.push(inputArray.toString().replace(/,/g, ''));
+        if (numberArray.length === 2){
+            calculation(operand);
+            numberArray = [result];
         }
-        calculation();
-    } else {
+        operand = input;
+        inputArray = [];
+    } else if (input === '=') {
+        numberArray.push(inputArray.toString().replace(/,/g, ''));
+        calculation(operand);
+    }else {
         endOfArray = false;
-        inputArray.push(input); 
+        inputArray.push(input);  
         displayText.textContent = inputArray.toString().replace(/,/g, '');
     } 
+    
 }
 
-function sortInputArray(operandIndex) {
-    for (let i = 0; i < inputArray.length; i++) {
-        if (i === operandIndex) {
+function calculation(operand) {
+    if (!numberArray[1]){
+        numberArray[1] = numberArray[0];
+    }
+    switch (operand) {
+        case "+":
+            result = parseFloat(numberArray[0]) + parseFloat(numberArray[1]);
             break;
-        }
-        if (!newNum && newNum !== 0) {
-            newNum = inputArray[i];
-        } else {
-            newNum = newNum + inputArray[i];
-        }
+        case "-":
+            result = parseFloat(numberArray[0]) - parseFloat(numberArray[1]);
+            break;
+        case "*":
+            result = parseFloat(numberArray[0]) * parseFloat(numberArray[1]);
+            break;
+        case "/":
+            result = parseFloat(numberArray[0]) / parseFloat(numberArray[1]);
+            break;
+        default:
+            alert("ERROR");
+            break;
     }
 
-    if (operandIndex === -1) {
-        inputArray = [];
-        endOfArray = true;
-    } else {
-        inputArray.splice(0, (operandIndex + 1));
-    }
-
-    numberArray.push(newNum);
-
-    newNum = null;
-}
-
-function calculation() {
-
-    for (let i = 0; i < operandArray.length; i++) {
-        if (!numberArray[1]){
-            numberArray[1] = 0;
-        } else if (!numberArray[0]){
-            numberArray[0] = 0;
-        }
-
-        switch (operandArray[i]) {
-            case '+':
-                result = parseFloat(numberArray[0]) + parseFloat(numberArray[1]);
-                break;
-            case '-':
-                result = parseFloat(numberArray[0]) - parseFloat(numberArray[1]);
-                break;
-            case '*':
-                result = parseFloat(numberArray[0]) * parseFloat(numberArray[1]);
-                break;
-            case '/':
-                result = parseFloat(numberArray[0]) / parseFloat(numberArray[1]);
-                break;
-            default:
-                alert("ERROR");
-                break;
-        }
-
-        numberArray.splice(0, 2, result);
-    }
-
-    numberArray = [];
-    operandArray = [];
-    calculated = true;
+    inputArray = [];
     displayText.textContent = result;
 }
 
