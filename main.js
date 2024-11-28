@@ -1,7 +1,5 @@
 const display = document.querySelector("#display");
-const displayText = document.createElement("p");
 display.setAttribute("class", "display-text");
-display.appendChild(displayText);
 
 const digitsPanel = document.querySelector("#digits-panel");
 const operandsPanel = document.querySelector("#operands-panel");
@@ -14,10 +12,15 @@ let firstOperator = null;
 let secondOperator = null;
 let result = null;
 
+window.addEventListener('keydown', (e) => {
+    const key = document.querySelector(`button[data-key='${e.keyCode}']`);
+    key.click();
+})
+
 function updateDisplay () {
-    display.textContent = displayValue;
+    display.innerText = displayValue;
     if (displayValue.length > 10) {
-        display.textContent = displayValue.substring(0, 10);
+        display.innerText = displayValue.substring(0, 10);
     }
 }
 
@@ -31,6 +34,7 @@ function buttonBehavior () {
                 updateDisplay();
             } else if (button.classList.contains('operators')) {
                 inputOperator(button.value);
+                updateDisplay();
             } else if (button.classList.contains('equals')) {
                 inputEquals();
                 updateDisplay();
@@ -128,57 +132,26 @@ function clearDisplay () {
 }
 
 function operation(firstNum, secondNum, operator) {
-    if (!numberArray[1]){
-        numberArray[1] = numberArray[0];
-    }
-    switch (operand) {
+    switch (operator) {
         case "+":
-            result = parseFloat(numberArray[0]) + parseFloat(numberArray[1]);
-            break;
+            return firstNum + secondNum;
         case "-":
-            result = parseFloat(numberArray[0]) - parseFloat(numberArray[1]);
-            break;
+            return firstNum - secondNum;
         case "*":
-            result = parseFloat(numberArray[0]) * parseFloat(numberArray[1]);
-            break;
+            return firstNum * secondNum;
         case "/":
-            result = parseFloat(numberArray[0]) / parseFloat(numberArray[1]);
-            break;
+            if (secondNum === 0) {
+                return 'ERROR'
+            } else {
+                return firstNum / secondNum;
+            }
         default:
             alert("ERROR");
             break;
     }
-
-    inputArray = [];
-    lastResult = result
-    result = 0;
-    displayText.textContent = lastResult;
 }
 
-function addFunc () {
-    if (!numberArray[1]){
-        numberArray[1] = 0;
-    }
-    result = parseInt(numberArray[0]) + parseInt(numberArray[1]);
-    numberArray.splice(0, 2, result);
-    return console.log (result);
-}
-
-function subtractFunc() {
-    result = parseInt(numberArray[0]) - parseInt(numberArray[1]);
-    numberArray.splice(0, 2, result);
-    return console.log (result);
-}
-
-function multiplyFunc(){
-    result = parseInt(numberArray[0]) * parseInt(numberArray[1]);
-    numberArray.splice(0, 2, result);
-    return console.log (result);
-}
-
-function divideFunc() {
-    result = parseInt(numberArray[0]) / parseInt(numberArray[1]);
-    numberArray.splice(0, 2, result);
-    return console.log (result);
+function round (number, places){
+    return parseFloat(Math.round(number + 'e' + places) + 'e-' + places);
 }
 

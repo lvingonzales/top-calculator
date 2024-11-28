@@ -75,6 +75,11 @@
     margin-right: 5px;
 }
 
+.buttons:focus{
+    color: white;
+    background-color: black;
+}
+
 .operators,
 .equals {
     width: 100px;
