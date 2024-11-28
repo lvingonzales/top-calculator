@@ -1,89 +1,133 @@
 const display = document.querySelector("#display");
 const displayText = document.createElement("p");
-displayText.setAttribute("class", "display-text");
+display.setAttribute("class", "display-text");
 display.appendChild(displayText);
 
-
 const digitsPanel = document.querySelector("#digits-panel");
-let buttons = new Array(10);
-
-// Quickly creates the basic 0-9 digits
-for (let i =0; i < buttons.length; i++){
-    buttons[i] = document.createElement("button");
-    buttons[i].setAttribute("class", "buttons digits")
-    buttons[i].textContent = i;
-    digitsPanel.appendChild(buttons[i]);
-}
-
-// Adds the period and backspace key
-buttons.push(document.createElement("button"));
-buttons[10].setAttribute("class", "buttons digits");
-buttons[10].textContent = '.';
-digitsPanel.appendChild(buttons[10]);
-
-buttons.push(document.createElement("button"));
-buttons[11].setAttribute("class", "buttons digits");
-buttons[11].textContent = 'AC';
-digitsPanel.appendChild(buttons[11]);
-
-
 const operandsPanel = document.querySelector("#operands-panel");
+const buttons = document.querySelectorAll('button');
 
+let displayValue = '0';
+let firstDigit = null;
+let secondDigit = null;
+let firstOperator = null;
+let secondOperator = null;
+let result = null;
 
-let symbols = ['+','-','*','/','='];
-let operandButtons = [];
-for (let i = 0; i < symbols.length; i++){
-    operandButtons[i] = document.createElement("button");
-    operandButtons[i].setAttribute("class", "buttons operands")
-    operandButtons[i].textContent = symbols[i];
-    operandsPanel.appendChild(operandButtons[i]);
-    operandButtons[i].addEventListener("click", () =>{
-        input = operandButtons[i].textContent;
-        handleInput(input);
-    })
+function updateDisplay () {
+    display.textContent = displayValue;
+    if (displayValue.length > 10) {
+        display.textContent = displayValue.substring(0, 10);
+    }
 }
 
-let input;
-for (let i = 0; i < buttons.length; i++){
-    buttons[i].addEventListener("click", () =>{
-        input = buttons[i].textContent;
-        handleInput(input);
-    })
+updateDisplay();
+
+function buttonBehavior () {
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            if (button.classList.contains('digits')) {
+                inputDigit(button.value);
+                updateDisplay();
+            } else if (button.classList.contains('operators')) {
+                inputOperator(button.value);
+            } else if (button.classList.contains('equals')) {
+                inputEquals();
+                updateDisplay();
+            } else if (button.classList.contains('decimal')) {
+                inputDecimal(button.value);
+                updateDisplay();
+            } else if (button.classList.contains('clear')) {
+                clearDisplay();
+                updateDisplay();
+            }
+        })
+    });
 }
 
-let inputArray = [];
-let newNum;
-let equation;
-let operand;
-let numberArray = [];
-let result;
+buttonBehavior();
 
-function handleInput(input){
-
-    if (input === 'AC'){
-        inputArray = [];
-        numberArray = [];
-        displayText.textContent = inputArray.toString().replace(/,/g, '');
-    } else if (symbols.includes(input) && input !== '='){
-        numberArray.push(inputArray.toString().replace(/,/g, ''));
-        if (numberArray.length === 2){
-            calculation(operand);
-            numberArray = [result];
+function inputDigit(digit) {
+    if (firstDigit === null) {
+        if (displayValue === '0' || displayValue === 0){
+            displayValue = digit;
+        } else if (displayValue === firstDigit){
+            displayValue = digit;
+        } else {
+            displayValue += digit;
         }
-        operand = input;
-        inputArray = [];
-    } else if (input === '=') {
-        numberArray.push(inputArray.toString().replace(/,/g, ''));
-        calculation(operand);
-    }else {
-        endOfArray = false;
-        inputArray.push(input);  
-        displayText.textContent = inputArray.toString().replace(/,/g, '');
-    } 
-    
+    } else {
+        if (displayValue === firstDigit) {
+            displayValue = digit;
+        } else {
+            displayValue += digit;
+        }
+    }
 }
 
-function calculation(operand) {
+function inputOperator (operator) {
+    if (firstOperator != null && secondOperator === null){
+        secondOperator = operator;
+        secondDigit = displayValue;
+        result = operation(Number(firstDigit), Number(secondDigit), firstOperator);
+        displayValue = round(result, 15).toString();
+        firstDigit = displayValue;
+        result = null;
+    } else if (firstOperator != null && secondOperator != null) {
+        secondDigit = displayValue;
+        result = operation(Number(firstDigit), Number(secondDigit), secondOperator);
+        displayValue = round(result, 15).toString();
+        firstDigit = displayValue;
+        result = null;
+    } else {
+        firstOperator = operator;
+        firstDigit = displayValue;
+    }
+}
+
+function inputEquals () {
+    if (firstOperator === null) {
+        displayValue = displayValue;
+    } else if (secondOperator != null) {
+        secondDigit = displayValue;
+        result = operation(Number(firstDigit), Number(secondDigit), secondOperator);
+        displayValue = round(result, 15).toString();
+        firstDigit = displayValue;
+        secondDigit = null;
+        firstOperator = null;
+        secondOperator = null;
+        result = null;
+    } else {
+        secondDigit = displayValue;
+        result = operation(Number(firstDigit), Number(secondDigit), firstOperator);
+        displayValue = round(result, 15).toString();
+        firstDigit = displayValue;
+        secondDigit = null;
+        firstOperator = null;
+        secondOperator = null;
+        result = null;
+    }
+}
+
+function inputDecimal (decimal) {
+    if (displayValue === firstDigit || displayValue === secondDigit) {
+        displayValue = '0';
+        displayValue += decimal;
+    } else if (!displayValue.includes(decimal)){
+        displayValue += decimal;
+    }
+}
+
+function clearDisplay () {
+    displayValue = '0';
+    firstDigit = null;
+    secondDigit = null;
+    firstOperator = null;
+    secondOperator = null;
+    result = null;
+}
+
+function operation(firstNum, secondNum, operator) {
     if (!numberArray[1]){
         numberArray[1] = numberArray[0];
     }
@@ -106,7 +150,9 @@ function calculation(operand) {
     }
 
     inputArray = [];
-    displayText.textContent = result;
+    lastResult = result
+    result = 0;
+    displayText.textContent = lastResult;
 }
 
 function addFunc () {
